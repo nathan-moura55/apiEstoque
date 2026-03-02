@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Estoque.Repositorio/1.0.0": {
+        "dependencies": {
+          "Estoque.Dominio": "1.0.0"
+        },
+        "runtime": {
+          "Estoque.Repositorio.dll": {}
+        }
+      },
+      "Estoque.Dominio/1.0.0": {
+        "runtime": {
+          "Estoque.Dominio.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Estoque.Repositorio/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Estoque.Dominio/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
