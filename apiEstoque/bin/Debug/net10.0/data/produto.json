@@ -46,5 +46,23 @@
     "Nome": "grampeador",
     "Quantidade": 8,
     "EstoqueMinimo": 2
+  },
+  {
+    "Id": 10,
+    "Nome": "caneta preta",
+    "Quantidade": 50,
+    "EstoqueMinimo": 20
+  },
+  {
+    "Id": 7,
+    "Nome": "Folha A4",
+    "Quantidade": 20,
+    "EstoqueMinimo": 5
+  },
+  {
+    "Id": 12,
+    "Nome": "caderno azul",
+    "Quantidade": 15,
+    "EstoqueMinimo": 10
   }
 ]
