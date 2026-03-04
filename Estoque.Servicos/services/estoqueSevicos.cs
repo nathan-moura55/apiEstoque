@@ -1,9 +1,11 @@
 using Estoque.Dominio.Models;
 using Estoque.Dominio.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Estoque.Servicos
 {
-    public class ControleDeEstoque
+    public class ControleDeEstoque : IControleDeEstoque
     {
         private readonly IProdutoRepositorio _repositorio;
 
@@ -65,12 +67,9 @@ namespace Estoque.Servicos
             _repositorio.Remover(id);
         }
 
-        public void ListarProdutos()
+        public IEnumerable<Produto> ListarTodos()
         {
-            foreach (var produto in _repositorio.ObterTodos())
-            {
-                Console.WriteLine(produto);
-            }
+            return _repositorio.ObterTodos();
         }
     }
 }
