@@ -1,15 +1,15 @@
 using Estoque.Dominio.Interfaces;
 using Estoque.Dominio.Models;
 using Estoque.Repositorio.Data;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
 
 namespace Estoque.Repositorio;
 
 public class ProdutoRepositorioSql : IProdutoRepositorio
 {
-    private readonly AppDbContext _context;
+    private readonly EstoqueDbContext _context;
 
-    public ProdutoRepositorioSql(AppDbContext context)
+    public ProdutoRepositorioSql(EstoqueDbContext context)
     {
         _context = context;
     }
@@ -37,12 +37,17 @@ public class ProdutoRepositorioSql : IProdutoRepositorio
     }
     public void Remover(int id)
     {
-        var produto = _context.Produtos.Find(id);
+        var produto = _context
+        .Produtos
+        .Find(id);
 
         if (produto != null)
         {
-            _context.Produtos.Remove(produto);
-            _context.SaveChanges();
+            _context
+            .Produtos
+            .Remove(produto);
+            _context
+            .SaveChanges();
         }
     }
 }

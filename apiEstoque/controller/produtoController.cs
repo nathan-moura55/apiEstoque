@@ -11,15 +11,15 @@ namespace Estoque.Api.Controllers;
 [Route("api/[controller]")]
 public class ProdutoController : ControllerBase
 {
-    private readonly IControleDeEstoque _estoqueService;
+    private readonly IControleDeEstoque _controleEstoque;
 
     public ProdutoController(IControleDeEstoque estoqueService)
     {
-        _estoqueService = estoqueService;
+        _controleEstoque = estoqueService;
     }
 
     [HttpGet]
-    public IActionResult Get() => Ok(_estoqueService.ListarTodos());
+    public IActionResult Get() => Ok(_controleEstoque.ListarTodos());
 
 
     [HttpPost("adicionar")]
@@ -27,7 +27,7 @@ public class ProdutoController : ControllerBase
     {
         try
         {
-            _estoqueService.AdicionarProduto(nome, quantidade, estoqueMinimo);
+            _controleEstoque.AdicionarProduto(nome, quantidade, estoqueMinimo);
 
             return Ok(new { mensagem = "Produto cadastrado com sucesso!" });
         }
@@ -42,7 +42,7 @@ public class ProdutoController : ControllerBase
     {
         try
         {
-            var produto = _estoqueService.BuscarProduto(id);
+            var produto = _controleEstoque.BuscarProduto(id);
 
             if (produto == null)
                 return NotFound(new { Mensagem = "produto não encontrado no sistema" });
@@ -59,7 +59,7 @@ public class ProdutoController : ControllerBase
     {
         try
         {
-            _estoqueService.AtualizarProduto(id, nome, estoqueMinimo);
+            _controleEstoque.AtualizarProduto(id, nome, estoqueMinimo);
 
             return Ok(new { mensagem = "Produto atualizado com sucesso!" });
         }
@@ -72,21 +72,29 @@ public class ProdutoController : ControllerBase
     [HttpPatch("{id}/entrada")]
     public IActionResult Entrada(int id, [FromBody] int qtd)
     {
-        _estoqueService.EntradaEstoque(id, qtd);
+        _controleEstoque.EntradaEstoque(id, qtd);
         return Ok();
     }
 
-    [HttpPatch("{id}/saida")]
-    public IActionResult saida(int id, [FromBody] int qtd)
+    [HttpPost("{id}/saida")]
+    public IActionResult SaidaEstoque(int id, [FromBody] int quantidade)
     {
-        _estoqueService.RegistrarSaidaEstoque(id, qtd);
-        return Ok();
+        try
+        {
+            _controleEstoque.RegistrarSaidaEstoque(id, quantidade);
+            return Ok("Saída registrada com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+
 
     [HttpDelete("{id}/deletar")]
     public IActionResult deletar(int id)
     {
-        _estoqueService.RemoverProduto(id);
+        _controleEstoque.RemoverProduto(id);
         return Ok();
     }
 }

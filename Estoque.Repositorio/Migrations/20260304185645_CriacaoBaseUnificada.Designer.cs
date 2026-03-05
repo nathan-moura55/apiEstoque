@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Estoque.Repositorio.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    [Migration("20260303162217_CriacaoInicial")]
-    partial class CriacaoInicial
+    [DbContext(typeof(EstoqueDbContext))]
+    [Migration("20260304185645_CriacaoBaseUnificada")]
+    partial class CriacaoBaseUnificada
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,25 @@ namespace Estoque.Repositorio.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Produtos");
+                });
+
+            modelBuilder.Entity("Estoque.Dominio.Models.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Cargo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Usuarios");
                 });
 #pragma warning restore 612, 618
         }

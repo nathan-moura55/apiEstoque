@@ -5,7 +5,7 @@
 namespace Estoque.Repositorio.Migrations
 {
     /// <inheritdoc />
-    public partial class CriacaoInicial : Migration
+    public partial class CriacaoBaseUnificada : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,6 +24,20 @@ namespace Estoque.Repositorio.Migrations
                 {
                     table.PrimaryKey("PK_Produtos", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Usuarios",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Nome = table.Column<string>(type: "TEXT", nullable: false),
+                    Cargo = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Usuarios", x => x.Id);
+                });
         }
 
         /// <inheritdoc />
@@ -31,6 +45,9 @@ namespace Estoque.Repositorio.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Produtos");
+
+            migrationBuilder.DropTable(
+                name: "Usuarios");
         }
     }
 }
