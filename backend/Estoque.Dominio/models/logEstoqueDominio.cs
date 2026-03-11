@@ -25,6 +25,6 @@ public class LogEstoque
         NomeUsuario = nomeUsuario;
         Operacao = operacao;
         QuantidadeAlterada = quantidadeAlterada;
-        Data = DateTime.Now;
+        Data = DateTime.UtcNow;
     }
 }
