@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Estoque.Dominio.Models;
 using Estoque.Dominio.Interfaces;
+using Estoque.Dominio.Models;
 
 namespace Estoque.Api.Controllers;
 
@@ -8,62 +8,63 @@ namespace Estoque.Api.Controllers;
 [Route("api/[controller]")]
 public class ProdutoController : ControllerBase
 {
-    private readonly IControleDeEstoque _controleEstoque;
+    private readonly IControleDeEstoque _servico;
 
-    public ProdutoController(IControleDeEstoque estoqueService)
+    public System.ConsoleColor Color { get; private set; }
+
+    public ProdutoController(IControleDeEstoque servico)
     {
-        _controleEstoque = estoqueService;
+        _servico = servico;
     }
 
+    
     [HttpGet("todos")]
-    public IActionResult Get() => Ok(_controleEstoque.ListarTodos());
+    public IActionResult Get() => Ok(_servico.ListarTodos());
 
-    [HttpPost("adicionar")]
-    public IActionResult Post(string nome, int quantidade, int estoqueMinimo)
-    {
-        try
-        {
-            _controleEstoque.AdicionarProduto(nome, quantidade, estoqueMinimo);
-            return Ok(new { mensagem = "Produto cadastrado com sucesso!" });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { erro = ex.Message });
-        }
-    }
-
+    
     [HttpGet("{id}/buscar")]
     public IActionResult Buscar(int id)
     {
-        var produto = _controleEstoque.BuscarProduto(id);
-        if (produto == null) return NotFound(new { Mensagem = "Produto não encontrado" });
-        return Ok(produto);
+        try {
+            var resultado = _servico.BuscarProduto(id);
+            return Ok(resultado);
+        } catch (Exception ex) {
+            return NotFound(new { erro = ex.Message });
+        }
     }
 
-    [HttpPost("{id}/editar")]
-    public IActionResult Editar(int id, string nome, int quantidade, int estoqueMinimo)
+    
+    [HttpPost("adicionar")]
+    public IActionResult Post([FromQuery] string nome, [FromQuery] int quantidade, [FromQuery] int estoqueMinimo)
     {
-        try
-        {
-            _controleEstoque.AtualizarProduto(id, nome, estoqueMinimo);
-            return Ok(new { mensagem = "Produto atualizado com sucesso!" });
-        }
-        catch (Exception ex)
-        {
+        try {
+            _servico.AdicionarProduto(nome, quantidade, estoqueMinimo);
+            return Ok(new { mensagem = "Produto criado!" });
+        } catch (Exception ex) {
             return BadRequest(new { erro = ex.Message });
         }
     }
 
-    [HttpPost("{id}/Retirar")]
-    public IActionResult SaidaEstoque(int id, [FromQuery] int quantidade) 
+    
+    [HttpPost("{id}/entrada")]
+    public IActionResult Entrada(int id, [FromQuery] int quantidade)
     {
-        try
-        {
-            _controleEstoque.RegistrarSaidaEstoque(id, quantidade);
-            return Ok(new { mensagem = "Saída registrada com sucesso." });
+        try {
+            _servico.EntradaEstoque(id, quantidade);
+            return Ok(new { mensagem = "Quantidade somada!" });
+        } catch (Exception ex) {
+            return BadRequest(new { erro = ex.Message });
         }
-        catch (Exception ex)
-        {
+    }
+
+    
+    [HttpPost("{id}/retirar")]
+    public IActionResult Retirar(int id, [FromQuery] int quantidade)
+    {
+        try {
+            _servico.RegistrarSaidaEstoque(id, quantidade);
+            return Ok(new { mensagem = "Retirada realizada!" });
+        } catch (Exception ex) {
             return BadRequest(new { erro = ex.Message });
         }
     }
@@ -71,7 +72,11 @@ public class ProdutoController : ControllerBase
     [HttpDelete("{id}/deletar")]
     public IActionResult Deletar(int id)
     {
-        _controleEstoque.RemoverProduto(id);
-        return Ok();
+        try {
+            _servico.RemoverProduto(id);
+            return Ok(new { mensagem = "Produto excluído!" });
+        } catch (Exception ex) {
+            return BadRequest(new { erro = ex.Message });
+        }
     }
 }

@@ -1,61 +1,21 @@
 using Estoque.Dominio.Models;
 using Estoque.Dominio.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace Estoque.Servicos
 {
     public class ControleDeEstoque : IControleDeEstoque
     {
         private readonly IProdutoRepositorio _produtoRepo;
-        private readonly IUsuarioRepositorio _usuarioRepo;
-        private readonly ISessaoUsuario _sessao;
-        private readonly ILogRepositorio _logRepo;
 
-        public ControleDeEstoque(
-            IProdutoRepositorio produtoRepo,
-            IUsuarioRepositorio usuarioRepo,
-            ILogRepositorio logRepo,
-            ISessaoUsuario sessao
-            )
+        public ControleDeEstoque(IProdutoRepositorio produtoRepo)
         {
             _produtoRepo = produtoRepo;
-            _usuarioRepo = usuarioRepo;
-            _logRepo = logRepo;
-            _sessao = sessao;
         }
 
-        public void AdicionarProduto(string nome, int quantidade, int estoqueMinimo)
-        {
-            if (_produtoRepo.ObterTodos().Any(p => p.Nome.Equals(nome, StringComparison.OrdinalIgnoreCase)))
-            {
-                throw new Exception("Produto com esse nome já existe.");
-            }
-
-            var novoProduto = new Produto(0, nome, quantidade, estoqueMinimo);
-            _produtoRepo.Adicionar(novoProduto);
-        }
-
-        public void AtualizarProduto(int id, string? novoNome = null, int? novoMinimo = null)
-        {
-            var produto = BuscarProduto(id);
-
-            if (produto == null)
-                throw new Exception("Produto não encontrado.");
-
-            if (!string.IsNullOrWhiteSpace(novoNome))
-            {
-                produto.AtualizarNome(novoNome);
-            }
-
-            if (novoMinimo.HasValue)
-            {
-                produto.AtualizarEstoqueMinimo(novoMinimo.Value);
-            }
-
-            _produtoRepo.Atualizar(produto);
-        }
+        public IEnumerable<Produto> ListarTodos() => _produtoRepo.ObterTodos();
 
         public Produto BuscarProduto(int id)
         {
@@ -64,75 +24,50 @@ namespace Estoque.Servicos
             return produto;
         }
 
+        public void AdicionarProduto(string nome, int quantidade, int estoqueMinimo)
+        {
+            if (_produtoRepo.ObterTodos().Any(p => p.Nome.Equals(nome, StringComparison.OrdinalIgnoreCase)))
+                throw new Exception("Já existe um produto com este nome.");
+
+            var novo = new Produto(0, nome, quantidade, estoqueMinimo);
+            _produtoRepo.Adicionar(novo);
+        }
+
+        public void AtualizarProduto(int id, string? novoNome, int? novoMinimo)
+        {
+            var produto = BuscarProduto(id);
+            if (!string.IsNullOrWhiteSpace(novoNome)) produto.AtualizarNome(novoNome);
+            if (novoMinimo.HasValue) produto.AtualizarEstoqueMinimo(novoMinimo.Value);
+
+            _produtoRepo.Atualizar(produto);
+        }
+
         public void EntradaEstoque(int id, int quantidade)
-        {
-            var produto = _produtoRepo.ObterPorId(id);
-            var usuario = _usuarioRepo.ObterPorId(id);
-
-            if (produto == null || usuario == null)
-                throw new Exception("Produto ou Usuário não encontrado.");
-
-            produto.AdicionarEstoque(quantidade);
-            _produtoRepo.Atualizar(produto);
-
-            var log = new LogEstoque(
-                produto.Id,
-                produto.Nome,
-                usuario.Id,
-                usuario.Nome,
-                "Entrada",
-                quantidade
-            );
-
-            _logRepo.SalvarLog(log);
-        }
-
-        public void RegistrarSaidaEstoque(int id, int quantidade)
-        {
-            var produto = _produtoRepo.ObterPorId(id);
-            var usuarioId = _sessao.ObterUsuarioLogadoId();
-            var usuario = _usuarioRepo.ObterPorId(usuarioId);
-
-            if (produto == null || usuario == null)
-                throw new Exception("Produto ou Usuário não encontrado.");
-
-            produto.RemoverEstoque(quantidade);
-
-            if (produto.AbaixoDoMinimo())
-            {
-                Console.WriteLine($"[ALERTA] Produto '{produto.Nome}' está abaixo do estoque mínimo.");
-            }
-
-            _produtoRepo.Atualizar(produto);
-
-            var log = new LogEstoque(
-                produto.Id,
-                produto.Nome,
-                usuario.Id,
-                usuario.Nome,
-                "Saida",
-                quantidade
-            );
-
-            _logRepo.SalvarLog(log);
-        }
-
-        public void RemoverProduto(int id)
         {
             var produto = _produtoRepo.ObterPorId(id);
 
             if (produto == null)
-                throw new Exception("Produto não encontrado.");
+                throw new Exception("Produto não encontrado para dar entrada.");
 
-            if (produto.Quantidade > 0)
-                throw new Exception("Não é possível excluir um produto com estoque residual.");
+            produto.AdicionarEstoque(quantidade);
 
-            _produtoRepo.Remover(id);
+            _produtoRepo.Atualizar(produto);
         }
 
-        public IEnumerable<Produto> ListarTodos()
+        public void RegistrarSaidaEstoque(int id, int quantidade)
         {
-            return _produtoRepo.ObterTodos();
+            var produto = BuscarProduto(id);
+            produto.RemoverEstoque(quantidade);
+            _produtoRepo.Atualizar(produto);
+        }
+
+        public void RemoverProduto(int id)
+        {
+            var produto = BuscarProduto(id);
+            if (produto.Quantidade > 0)
+                throw new Exception("Não é possível excluir um produto que ainda tem estoque.");
+
+            _produtoRepo.Remover(id);
         }
     }
 }

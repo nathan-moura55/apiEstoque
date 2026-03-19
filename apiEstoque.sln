@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estoque.Servicos", "backend
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apiEstoque", "backend\api", "{D9EC9429-0E4E-13E0-5D39-C4844993DE97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estoque.Api", "backend\Estoque.Api\Estoque.Api.csproj", "{E235520C-D891-4AAA-8DBA-18D61B04A25A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api", "backend\api\Estoque.Api.csproj", "{E235520C-D891-4AAA-8DBA-18D61B04A25A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
